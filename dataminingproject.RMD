@@ -1,0 +1,75 @@
+---
+title: "Yet To Be Determined"
+author: "Olusoji Oluwafemi Daniel"
+date: "February 23, 2017"
+output: pdf_document
+---
+
+```{r setupAndDataCleaning, include=FALSE}
+library(tidyverse)
+knitr::opts_chunk$set(echo = F)
+load('project.RData')
+#transforming the gene matrix
+rnaSeq2Data22 <- data.frame(t(rnaSeq2Data2)) 
+#extracting and creating the ID variable in the gene matrix
+rnaSeq2Data22$ID <- row.names(rnaSeq2Data22)
+#merging the gene matrix and clinical data
+fulldata <- merge(rnaSeqSamples,rnaSeq2Data22,by.x='sample',by.y='ID')
+#remocing the objects not needed
+rm(list=ls()[ls()!= 'fulldata'])
+# 1 = Alive, 0 = dead
+fulldata$dead <- ifelse(fulldata$Alive < 0, 1, 0)
+fulldata <- fulldata %>% mutate(logdeath=log(days_to_death))
+
+##### cleaning pathologic_grade
+#removing [ ]
+fulldata <- fulldata %>% mutate(pathologic_grade=gsub("\\[|\\]","",pathologic_grade))
+
+#Defining Missing Values appropriately
+fulldata$pathologic_grade[fulldata$pathologic_grade %in% c("NA","Not Available","Discrepancy")] <- "Missing"
+
+#Replacing all T stages with the 1st two substrings
+fulldata$pathologic_grade[!(fulldata$pathologic_grade %in% c("Missing","Not Applicable"))] <- substr(fulldata$pathologic_grade[!(fulldata$pathologic_grade %in% c("Missing","Not Applicable"))],1,2)
+
+#turn Ti into T1
+fulldata$pathologic_grade[fulldata$pathologic_grade=='Ti'] <- 'T1'
+
+####  Cleaning pathologic_stage
+fulldata <- fulldata %>% mutate(pathologic_stage=gsub("\\[|\\]","",pathologic_stage))
+
+#defining missing values appropriately
+fulldata$pathologic_stage[fulldata$pathologic_stage %in% c("NA","Not Available","Discrepancy","Unknown")] <- "Missing"
+
+#
+fulldata$pathologic_stage[fulldata$pathologic_stage == 'I or II NOS'] <- "Stage 0"
+
+#removing Stage
+fulldata <- fulldata %>% mutate(pathologic_stage=gsub("Stage","",pathologic_stage))
+
+#
+str_sub(fulldata$pathologic_stage[str_length(fulldata$pathologic_stage) >= 2 & substr(fulldata$pathologic_stage,1,1)=='I'],
+str_length(fulldata$pathologic_stage[str_length(fulldata$pathologic_stage) >= 2 & substr(fulldata$pathologic_stage,1,1)=='I']),
+str_length(fulldata$pathologic_stage[str_length(fulldata$pathologic_stage) >= 2 & substr(fulldata$pathologic_stage,1,1)=='I'])) <- ''
+
+
+
+#fulldata <- fulldata %>% mutate(pathologic_grade2 = 
+#            ifelse(substr(pathologic_grade,1,1)=='T',substr(pathologic_grade,1,2),pathologic_grade))
+```
+
+## Introduction
+
+
+## Methods
+
+### Supervised Learning
+
+### Unsupervised Learning
+
+
+
+##  Results
+
+### Data Exploration
+
+

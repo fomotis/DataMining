@@ -46,15 +46,22 @@ fulldata$pathologic_stage[fulldata$pathologic_stage == 'I or II NOS'] <- "Stage 
 #removing Stage
 fulldata <- fulldata %>% mutate(pathologic_stage=gsub("Stage","",pathologic_stage))
 
-#
-str_sub(fulldata$pathologic_stage[str_length(fulldata$pathologic_stage) >= 2 & substr(fulldata$pathologic_stage,1,1)=='I'],
-str_length(fulldata$pathologic_stage[str_length(fulldata$pathologic_stage) >= 2 & substr(fulldata$pathologic_stage,1,1)=='I']),
-str_length(fulldata$pathologic_stage[str_length(fulldata$pathologic_stage) >= 2 & substr(fulldata$pathologic_stage,1,1)=='I'])) <- ''
+#trimming white spaces
+fulldata <- fulldata %>% mutate(pathologic_stage=str_trim(pathologic_stage))
 
+#joining some levels together
+fulldata$pathologic_stage[fulldata$pathologic_stage %in% c("Tis","X")] <- 'IS'
+
+#
+fulldata$pathologic_stage[!(fulldata$pathologic_stage %in% c("Missing","Not Applicable"))] <- gsub("[A B C]","",
+fulldata$pathologic_stage[!(fulldata$pathologic_stage %in% c("Missing","Not Applicable"))])
 
 
 #fulldata <- fulldata %>% mutate(pathologic_grade2 = 
 #            ifelse(substr(pathologic_grade,1,1)=='T',substr(pathologic_grade,1,2),pathologic_grade))
+
+#fulldata <- fulldata %>% filter(fulldata$pathologic_stage %in% c("Tis","X")) %>%
+#  mutate(pathologic_stage= "IS")
 ```
 
 ## Introduction

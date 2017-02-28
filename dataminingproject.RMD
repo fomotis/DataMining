@@ -52,7 +52,7 @@ fulldata <- fulldata %>% mutate(pathologic_stage=str_trim(pathologic_stage))
 #joining some levels together
 fulldata$pathologic_stage[fulldata$pathologic_stage %in% c("Tis","X")] <- 'IS'
 
-#
+#removing the extra levels for I II and III
 fulldata$pathologic_stage[!(fulldata$pathologic_stage %in% c("Missing","Not Applicable"))] <- gsub("[A B C]","",
 fulldata$pathologic_stage[!(fulldata$pathologic_stage %in% c("Missing","Not Applicable"))])
 
